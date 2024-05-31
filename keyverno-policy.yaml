@@ -1,0 +1,28 @@
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: cosign
+spec:
+  validationFailureAction: enforce
+  background: false
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail
+  rules:
+    - name: check-image
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+            - Deployment
+      verifyImages:
+      - imageReferences:
+              - "*"
+        attestors:
+        - count: 1
+          entries:
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                #PUBLIC_KEY
+                -----END PUBLIC KEY-----
